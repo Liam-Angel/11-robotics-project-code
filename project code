@@ -1,0 +1,134 @@
+#include <Servo.h>
+const int soundPin = A0;
+const int pot = A5;
+const int trig = 8;   
+const int echo = 9;
+const int min1 = 11;
+const int min2 = 12;
+const int ENA = 3;
+const int led = 4;
+const int PB = 6;
+const int buzz = 13;
+Servo servo;
+ 
+
+void setup() 
+{
+  pinMode(min1, OUTPUT);
+  pinMode(min2, OUTPUT);
+  pinMode(ENA, OUTPUT);
+  pinMode(trig, OUTPUT);
+  pinMode(echo, INPUT);
+  pinMode(soundPin, INPUT);
+  pinMode(pot, INPUT);
+  pinMode(led, OUTPUT);
+  pinMode(PB, INPUT);
+  pinMode(buzz, OUTPUT);
+  servo.attach(7);
+
+  Serial.begin(9600);
+
+}
+
+ 
+
+void loop() 
+{
+  int SS = analogRead(soundPin);
+  int pt = analogRead(pot);
+  int butter = digitalRead(PB);
+  Serial.print(pt/4.1);
+  Serial.print("    ");
+  Serial.print(butter);
+  Serial.print("    ");
+  Serial.println(SS);
+  
+
+
+  digitalWrite(min1, HIGH);
+
+  digitalWrite(min2, LOW);
+
+  
+  if (pt/4.1 > 70)
+  {
+  analogWrite(ENA, pt/4.1);
+  }
+  else
+  {
+      analogWrite(ENA, 0);
+  }
+
+  
+    if(SS < 510 && SS > 55)
+  {
+    servo.write(SS/3); 
+  }
+  else if (SS > 170)
+  {
+     servo.write(170); 
+  }
+  else
+  {
+    servo.write(0);
+  }
+
+  
+  if (butter == 1)
+  {
+    tone(buzz, 500);
+  }
+  else
+  {
+    noTone(buzz);
+  }
+
+  
+ sonic();
+
+
+}
+long microsecondsToCentimetres(long microseconds)
+{
+  return microseconds / 29 / 2;
+}
+  
+void sonic()
+{
+
+  
+      // Variables for duration of ping and the distance in cm
+  long duration, cm;
+
+  // The PING))) is triggered by a HIGH pulse of 2 or more microseconds.
+  // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
+  
+  
+  digitalWrite(trig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig, HIGH);
+  delayMicroseconds(5);
+  digitalWrite(trig, LOW);
+  
+  
+  duration = pulseIn(echo, HIGH);
+
+
+  cm = microsecondsToCentimetres(duration);
+  
+  Serial.print(cm);
+if(cm < 10)
+{
+  analogWrite(led, 255);
+}
+else
+{
+  analogWrite(led, 0);
+}
+
+
+ 
+
+    
+}
+
